@@ -1,55 +1,10 @@
 import wollok.game.*
-
-object femenino{
-	method prefijo() {
-		return "f"
-	}
-	method otro() {
-		return masculino
-	}
-}
-object masculino{
-	method prefijo() {
-		return "m"
-	}
-	method otro() {
-		return femenino
-	}
-}
-
-
-
-object personaje {
-	var property genero = femenino
-	var property position = game.center()
-	const propiedad = granja
-	
-	method  image() {
-		return genero.prefijo() + "-player-" + self.estado() + ".png"
-	} 
-	method estado() {
-		return if (self.estaSobreAlgo())  "abajo" else "normal" 
-	}
-	method estaSobreAlgo() {
-		return not game.colliders(self).isEmpty()
-	}
-	method cambiarGenero() {
-		genero = genero.otro()
-	}
-
-	method plantar(cultivo) {
-		propiedad.plantar(cultivo, self.position())
-	} 
-	
-}
-
-object mercado {
-	const property position = game.at(5,5)
-	const property image = "mercado.png"
-}
+import cultivos.*
+import personaje.*
 
 object granja {
 	const property cultivos = #{}
+	const property cosecha = [] 
 	method plantar(cultivo, position) {
 		self.validarPlantar(cultivo, position)
 		cultivo.position(position)
@@ -66,5 +21,40 @@ object granja {
 	}
 	method hayCultivo(position) {
 		return cultivos.any({cultivo => cultivo.position() == position})
+	}
+	method regar(){
+		self.validarRiego()
+		self.cultivoActual().regar()
+	}
+	method validarRiego(){
+		if(not self.hayCultivo(personaje.position())){
+			self.error("no tengo nada para regar")
+		}
+	}
+	method cultivoActual(){
+		return(cultivos.find({cultivo=> cultivo.position() == personaje.position()}))
+	}
+	method cosechar(){
+		self.validarCultivo()
+		const cultivo = self.cultivoActual()
+		cultivo.cosechar()
+		cultivos.remove(cultivo)
+		cosecha.add(cultivo)
+	}
+	method validarCultivo(){
+		if(not self.hayCultivo(personaje.position())){
+			self.error("No hay planta para cosechar")
+		}
+	}
+	method vender(){
+		const total = self.totalAVender()
+		cosecha.clear()
+		return total 
+	}
+	method totalAVender(){
+		return cosecha.sum({cosecha=> cosecha.precio()})
+	}
+	method cosechaAVender(){
+		return cosecha.size()
 	}
 }
