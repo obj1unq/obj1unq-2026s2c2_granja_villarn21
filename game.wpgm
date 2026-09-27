@@ -16,9 +16,9 @@ program lagranja {
  	game.addVisualCharacter(personaje)
 	//keys
 	keyboard.g().onPressDo{personaje.cambiarGenero()}
-	keyboard.m().onPressDo({granja.plantar(maiz, personaje.position())})
-	keyboard.t().onPressDo({granja.plantar(trigo, personaje.position())})
-	keyboard.o().onPressDo({granja.plantar(tomaco, personaje.position())})
+	keyboard.m().onPressDo({personaje.plantar(new Maiz(position = personaje.position()))})
+	keyboard.t().onPressDo({personaje.plantar(new Trigo(position = personaje.position()))})
+	keyboard.o().onPressDo({personaje.plantar(new Tomaco(position = personaje.position()))})
 	keyboard.r().onPressDo({granja.regar()})
 	keyboard.c().onPressDo({granja.cosechar()})
 	keyboard.space().onPressDo({personaje.cosechaAVender()})

@@ -38,14 +38,9 @@ object personaje{
 	}
 
 	method plantar(cultivo) {
-		self.validarPlantar(cultivo)
-		propiedad.plantar(cultivo, self.position())
+		propiedad.validarPlantar(self.position())
+		propiedad.plantar(cultivo)
 	} 
-	method validarPlantar(cultivo){
-		if(granja.hayCultivo(self.position())){
-			self.error("No se puede plantar aca")
-		}
-	}
     method vender(){
         oro = oro + granja.totalAVender()
         granja.vender() 

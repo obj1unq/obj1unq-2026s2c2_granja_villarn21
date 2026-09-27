@@ -1,7 +1,7 @@
 import wollok.game.*
 import granja.*
 
-object maiz {
+class Maiz {
 	var esBebe = true 
 	var property position = game.center()
   method image(){
@@ -26,7 +26,7 @@ object maiz {
     return 150
   }
 }
-object trigo {
+class Trigo {
   var evolucion = 0
   var property position = game.center()
   method image(){
@@ -47,7 +47,7 @@ object trigo {
   }
 }
 
-object tomaco {
+class Tomaco {
   var property position = game.center()
   method image(){
 	return "tomaco" + ".png"
