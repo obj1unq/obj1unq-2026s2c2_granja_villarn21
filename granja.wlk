@@ -7,6 +7,7 @@ object granja {
 	const property cosecha = [] 
 	method plantar(cultivo) {
 		self.validarPlantar(personaje.position())
+		cultivo.position(personaje.position())
 		cultivos.add(cultivo)
 		game.addVisual(cultivo)
 	}
