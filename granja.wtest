@@ -1,9 +1,151 @@
 import wollok.game.*
 import granja.*
+import personaje.*
+import mercado.*
+import cultivos.*
 describe "test de la granja" {
 
 
     test "personaje" {
         assert.that(true)
     }
+}
+describe "test de sembrar" {
+    method initialize() {
+        game.height(10)
+        game.width(10)
+    }
+  test "plantar tomaco" {
+        const tomaco1 = new Tomaco()
+        personaje.plantar(tomaco1)
+        assert.equals(#{tomaco1}, granja.cultivos())
+  }
+  test "no se puede plantar en una parcela ya ocupada" {
+        personaje.position(game.at(5, 5))
+        const tomaco = new Tomaco()
+        const maiz = new Maiz()
+        personaje.plantar(tomaco)
+        assert.throwsException({personaje.plantar(maiz)})
+    }
+}
+describe "test de rigeo" {
+    method initialize() {
+        game.height(10)
+        game.width(10)
+    }
+  test "regar sin cultivo" {
+        personaje.position(game.at(2, 2))
+        assert.throwsException({granja.regar()})
+    }
+    test "regar maiz bebe a adulto" {
+        personaje.position(game.at(2, 2))
+        const maiz = new Maiz()
+        granja.plantar(maiz)
+        assert.equals("maiz_bebe.png", maiz.image())
+        granja.regar()
+        //assert.equals("maiz_adulto.png", maiz.image())
+    }
+    test "regar trigo avanza etapas y vuelve a 0" {
+        personaje.position(game.at(2, 2))
+        const trigo = new Trigo()
+        granja.plantar(trigo)
+        assert.equals("trigo_0.png", trigo.image())
+        granja.regar()
+        assert.equals("trigo_1.png", trigo.image())
+        granja.regar()
+        assert.equals("trigo_2.png", trigo.image())
+        granja.regar()
+        assert.equals("trigo_3.png", trigo.image())
+        granja.regar()
+        assert.equals("trigo_0.png", trigo.image())
+    }
+    test "regar tomaco lo mueve una posicion arriba" {
+        game.height(5)
+        game.width(5)
+        const tomaco = new Tomaco()
+        personaje.position(game.at(3, 3))
+        granja.plantar(tomaco)
+        granja.regar()
+        assert.equals(game.at(3, 4), tomaco.position())
+    }
+    test "regar tomaco en el borde superior lo envuelve abajo" {
+        game.height(5)
+        game.width(5)
+        const tomaco = new Tomaco()
+        personaje.position(game.at(3, 4))
+        granja.plantar(tomaco)
+        granja.regar()
+        assert.equals(game.at(3, 0), tomaco.position())
+    }
+    test "regar tomaco no se mueve si el destino esta ocupado" {
+        game.height(5)
+        game.width(5)
+        const trigo = new Trigo()
+        const tomaco = new Tomaco()
+        personaje.plantar(trigo)
+        personaje.position(game.at(3, 0))
+        personaje.plantar(tomaco)
+        granja.regar()
+        assert.equals(game.at(3, 0), tomaco.position())
+    }
+}
+describe "test cosecha" {
+    method initialize() {
+        game.height(10)
+        game.width(10)
+    }
+  test "no se puede cosechar si no hay nada" {
+        personaje.position(game.at(1, 1))
+        assert.throwsException({granja.cosechar()})
+    }
+    test "no se puede cosechar maiz bebe" {
+        const maiz = new Maiz()
+        personaje.position(game.at(1, 1))
+        granja.plantar(maiz)
+        assert.throwsException({granja.cosechar()})
+    }
+}
+describe "test venta" {
+    method initialize() {
+        game.height(10)
+        game.width(10)
+    }
+  test "vender un tomaco acredita 80 monedas" {
+        const tomaco = new Tomaco()
+        personaje.position(game.at(1, 1))
+        personaje.plantar(tomaco)
+        granja.cosechar()
+        personaje.vender()
+        assert.equals("80", personaje.text())
+    }
+    test "vender maiz da 150 monedas" {
+        const maiz = new Maiz()
+        personaje.position(game.at(1, 1))
+        personaje.plantar(maiz)
+        granja.regar()
+        granja.cosechar()
+        personaje.vender()
+        assert.equals("150", personaje.text())
+    }
+    test "vender trigo en etapa 2 da 100 monedas" {
+        const trigo = new Trigo()
+        personaje.position(game.at(1, 1))
+        personaje.plantar(trigo)
+        granja.regar()
+        granja.regar()
+        granja.cosechar()
+        personaje.vender()
+        assert.equals("100", personaje.text())
+    }
+}
+
+describe "plantar" {
+  test "plantar mas de un trigo" {
+    const trigo = new Trigo()
+    const trigo1 = new Trigo()
+    personaje.position(game.at(1,1))
+    personaje.plantar(trigo)
+    personaje.position(game.at(1,2))
+    personaje.plantar(trigo1)
+  }
 }
